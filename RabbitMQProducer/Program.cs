@@ -8,16 +8,34 @@ namespace RabbitMQProducer
     {
         static void Main(string[] args)
         {
-            var connectionFactory = new ConnectionFactory();
-            IConnection connection = connectionFactory.CreateConnection();
-            IModel channel = connection.CreateModel();
-            channel.QueueDeclare("hello-world-queue", false, false, false, null);
-            byte[] message = Encoding.UTF8.GetBytes("Hello, World!");
-            channel.BasicPublish(string.Empty, "hello-world-queue", null, message);
-            Console.WriteLine("Press any key to exit");
-            Console.ReadKey();
-            channel.Close();
-            connection.Close();
+            var factory = new ConnectionFactory() { HostName = "localhost" };
+            using (var connection = factory.CreateConnection())
+            {
+                using (var channel = connection.CreateModel())
+                {
+                    channel.QueueDeclare("task_queue", true, false, false, null);
+                    var properties = channel.CreateBasicProperties();
+                    properties.SetPersistent(true);
+
+                    Console.WriteLine(" [*] Sending messages. " +
+                                      "To exit press CTRL+C");
+                    while (true)
+                    {
+                        var message = GetMessage();
+                        var body = Encoding.UTF8.GetBytes(message);
+
+                        channel.BasicPublish("", "task_queue", properties, body);
+                        Console.WriteLine(" [x] Sent {0}", message);
+
+                        System.Threading.Thread.Sleep(1000);
+                    }
+                }
+            }
+        }
+
+        private static string GetMessage()
+        {
+            return Guid.NewGuid().ToString();
         }
     }
 }
