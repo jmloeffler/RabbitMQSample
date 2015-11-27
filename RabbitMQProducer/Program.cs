@@ -17,8 +17,7 @@ namespace RabbitMQProducer
                     var properties = channel.CreateBasicProperties();
                     properties.SetPersistent(true);
 
-                    Console.WriteLine(" [*] Sending messages. " +
-                                      "To exit press CTRL+C");
+                    Console.WriteLine(" [*] Sending messages. To exit press CTRL+C");
                     while (true)
                     {
                         var message = GetMessage();

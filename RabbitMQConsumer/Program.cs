@@ -21,8 +21,7 @@ namespace RabbitMQConsumer
                     var consumer = new QueueingBasicConsumer(channel);
                     channel.BasicConsume("task_queue", false, consumer);
 
-                    Console.WriteLine(" [*] Waiting for messages. " +
-                                      "To exit press CTRL+C");
+                    Console.WriteLine(" [*] Waiting for messages. To exit press CTRL+C");
                     while (true)
                     {
                         var ea = consumer.Queue.Dequeue();
