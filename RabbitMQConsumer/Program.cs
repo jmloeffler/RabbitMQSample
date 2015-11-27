@@ -36,6 +36,13 @@ namespace RabbitMQConsumer
 
                         Console.WriteLine(" [x] Done");
 
+                        if (ea.BasicProperties.IsReplyToPresent())
+                        {
+                            var replyProps = channel.CreateBasicProperties();
+                            replyProps.CorrelationId = ea.BasicProperties.CorrelationId;
+                            channel.BasicPublish("", ea.BasicProperties.ReplyTo, replyProps, body);
+                        }
+
                         channel.BasicAck(ea.DeliveryTag, false);
                     }
                 }
